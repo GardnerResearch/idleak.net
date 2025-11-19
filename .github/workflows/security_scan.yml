@@ -21,7 +21,6 @@ jobs:
       - name: create SBOM
         uses: anchore/sbom-action@v0
         with:
-          path: .
           format: spdx-json
           output-file: sbom.json
           
@@ -31,10 +30,3 @@ jobs:
           sbom: sbom.json
           severity-cutoff: critical 
           fail-build: true
-          
-      - name: Upload SBOM Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.event.repository.name }}-sbom-artifact
-          path: sbom.json
-          retention-days: 5
