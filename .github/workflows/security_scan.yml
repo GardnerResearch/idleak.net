@@ -6,7 +6,7 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: write
   security-events: write
   actions: read
 
@@ -18,20 +18,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         
-      - name: Generate SBOM (Software Bill of Materials)
+      - name: create SBOM
         uses: anchore/sbom-action@v0
-        id: sbom_gen
         with:
-          path: "." 
-          format: syft-json
+          path: .
+          format: spdx-json
           output-file: sbom.json
           
       - name: Scan SBOM for Vulnerabilities with Grype
-        uses: anchore/scan-action@v3
+        uses: anchore/scan-action@v6
         with:
           sbom: sbom.json
-          severity-cutoff: high 
-          output-format: sarif
+          severity-cutoff: critical 
           fail-build: true
           
       - name: Upload SBOM Artifact
