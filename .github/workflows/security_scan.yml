@@ -29,7 +29,7 @@ jobs:
       - name: Scan SBOM for Vulnerabilities with Grype
         uses: anchore/scan-action@v3
         with:
-          sbom: ${{ steps.sbom_gen.outputs.sbom-path }}
+          sbom: sbom.json
           severity-cutoff: high 
           output-format: sarif
           fail-build: true
@@ -38,5 +38,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.event.repository.name }}-sbom-artifact
-          path: ${{ steps.sbom_gen.outputs.sbom-path }}
+          path: sbom.json
           retention-days: 5
