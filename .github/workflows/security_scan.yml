@@ -1,0 +1,42 @@
+name: SBOM and Vulnerability Scan
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  security_analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Generate SBOM (Software Bill of Materials)
+        uses: anchore/sbom-action@v0
+        id: sbom_gen
+        with:
+          path: "." 
+          format: syft-json
+          output-file: ${{ github.event.repository.name }}-sbom.json
+          
+      - name: Scan SBOM for Vulnerabilities with Grype
+        uses: anchore/scan-action@v3
+        with:
+          sbom: ${{ steps.sbom_gen.outputs.sbom-path }}
+          fail-on: high 
+          output-format: sarif
+          upload-sarif: true
+
+      - name: Upload SBOM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}-sbom-artifact
+          path: ${{ steps.sbom_gen.outputs.sbom-path }}
+          retention-days: 5
