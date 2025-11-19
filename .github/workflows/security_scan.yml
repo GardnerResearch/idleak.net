@@ -24,7 +24,7 @@ jobs:
         with:
           path: "." 
           format: syft-json
-          output-file: ${{ github.event.repository.name }}-sbom.json
+          output-file: sbom.json
           
       - name: Scan SBOM for Vulnerabilities with Grype
         uses: anchore/scan-action@v3
